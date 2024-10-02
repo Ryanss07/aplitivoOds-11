@@ -4,6 +4,8 @@
  */
 package aplicativoccs;
 
+import interfaces.TelaLogin;
+
 /**
  *
  * @author ryans
@@ -13,7 +15,9 @@ public class Aplicativoccs {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) {    
+     TelaLogin tl = new TelaLogin();
+     tl.setVisible(true);
         // TODO code application logic here
     }
     

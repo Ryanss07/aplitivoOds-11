@@ -13,13 +13,13 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author ryans
  */
-public class GerenciarUsuarios extends javax.swing.JFrame {
+public class Gerenciaradmins extends javax.swing.JFrame {
     private Tradutor tradutor;
     private BancoDeDados bancoDeDados;
     /**
      * Creates new form EnviarSugestoes
      */
-    public GerenciarUsuarios() {
+    public Gerenciaradmins() {
          // Obtem o usuário logado
          Usuario usuarioLogado = UsuarioLogado.getUsuario();
         // Inicializa o tradutor e o banco de dados
@@ -88,7 +88,6 @@ public class GerenciarUsuarios extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(937, 683));
-        setPreferredSize(new java.awt.Dimension(937, 683));
         setResizable(false);
         getContentPane().setLayout(null);
 
@@ -280,7 +279,7 @@ if (selectedRow != -1) {
     private void carregarUsuarios() {
    DefaultTableModel tableModel = (DefaultTableModel) sgt_tb.getModel();
     tableModel.setRowCount(0); // Clear the table
-    List<Usuario> usuarios = bancoDeDados.listarUsuarios(); // Call your database method here
+    List<Usuario> usuarios = bancoDeDados.listaradmins(); // Call your database method here
      for (Usuario usuario : usuarios) {
         Object[] row = new Object[] {
             usuario.getNome(),
@@ -309,7 +308,7 @@ if (selectedRow != -1) {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new GerenciarUsuarios().setVisible(true);
+                new Gerenciaradmins().setVisible(true);
             }
         });
     }

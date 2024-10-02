@@ -258,7 +258,7 @@ public class CadastroGestores extends javax.swing.JFrame {
 
         if (verificarCampos()) { // Verifica se os campos estão preenchidos
             BancoDeDados banco = new BancoDeDados(); // Cria uma nova instância do banco de dados
-            banco.cadastrarGerente(nome, email, senha, endereco, "gerente"); // Cadastra o gerente
+            banco.cadastrarGerente(nome, email, senha, endereco); // Cadastra o gerente
             JOptionPane.showMessageDialog(this, tradutor.traduzir("usuarioCadastrado")); // Mensagem de sucesso
             clearFields(); // Limpa os campos após o cadastro
         } else {

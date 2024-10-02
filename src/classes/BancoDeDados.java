@@ -20,204 +20,319 @@ public class BancoDeDados {
         }
     }
     // =================== Funções de Usuários ===================
-    // Método para adicionar usuários comuns
-    public void cadastrarUsuarioComum(String nome, String email, String senha, String endereco) {
-        String sql = "INSERT INTO usuarios (nome, email, senha, endereco, tipo) VALUES (?, ?, ?, ?, 'comum')";
-        try (Connection conn = conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            // Configura os parâmetros da consulta
-            stmt.setString(1, nome);
-            stmt.setString(2, email);
-            stmt.setString(3, senha); 
-            stmt.setString(4, endereco);
-            stmt.executeUpdate(); // Executa a atualização no banco
-        } catch (SQLException e) {
-            e.printStackTrace(); // Exibe erro ao cadastrar
-        }
-    }
+// Método para adicionar usuários comuns
+public void cadastrarUsuarioComum(String nome, String email, String senha, String endereco) {
+    // Inserindo na tabela usuarios
+    String sqlUsuarios = "INSERT INTO usuarios (nome, email, endereco, tipo) VALUES (?, ?, ?, 'comum')";
 
-    // Método para adicionar usuários com permissão de administrador
-    public void cadastrarGerente(String nome, String email, String senha, String endereco,String tipo) {
-        String sql = "INSERT INTO usuarios (nome, email, senha, endereco, tipo) VALUES (?, ?, ?, ?, 'gerente')";
-        try (Connection conn = conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            // Configura os parâmetros da consulta
-            stmt.setString(1, nome);
-            stmt.setString(2, email);
-            stmt.setString(3, senha); 
-            stmt.setString(4, endereco);
-            stmt.executeUpdate(); // Executa a atualização no banco
-        } catch (SQLException e) {
-            e.printStackTrace(); // Exibe erro ao cadastrar
-        }
-    }
+    try (Connection conn = conectar(); // Conecta ao banco de dados
+         PreparedStatement stmtUsuarios = conn.prepareStatement(sqlUsuarios)) {
 
-    // Método para listar usuários
-    public List<Usuario> listarUsuarios() {
-        List<Usuario> usuarios = new ArrayList<>(); // Lista para armazenar usuários
-        String sql = "SELECT * FROM usuarios";
-        try (Connection conn = conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                Usuario usuario = new Usuario(); // Cria um novo objeto Usuario
-                // Preenche os dados do usuário a partir do ResultSet
-                usuario.setId(rs.getInt("id"));
-                usuario.setNome(rs.getString("nome"));
-                usuario.setEmail(rs.getString("email"));
-                usuario.setSenha(rs.getString("senha"));
-                usuario.setEndereco(rs.getString("endereco")); 
-                usuario.setTipo(rs.getString("tipo"));
-                usuarios.add(usuario); // Adiciona o usuário à lista
-            }
-        } catch (SQLException e) {
-            e.printStackTrace(); // Exibe erro ao listar
-        }
-        return usuarios; // Retorna a lista de usuários
-    }
+        // Configura os parâmetros da consulta para a tabela usuarios
+        stmtUsuarios.setString(1, nome); // Nome do usuário
+        stmtUsuarios.setString(2, email); // Email do usuário
+        stmtUsuarios.setString(3, endereco); // Endereço do usuário
+        stmtUsuarios.executeUpdate(); // Executa a atualização na tabela usuarios
 
-    // Método para remover usuários
-    public boolean removerUsuario(String email) {
-        String sql = "DELETE FROM usuarios WHERE email = ?";
-        try (Connection conn = conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, email); // Configura o parâmetro da consulta
-            int affectedRows = stmt.executeUpdate(); // Executa a remoção
-            return affectedRows > 0; // Retorna true se uma linha foi afetada
-        } catch (SQLException e) {
-            e.printStackTrace(); // Exibe erro ao remover
-            return false; // Retorna false em caso de erro
-        }
+    } catch (SQLException e) {
+        e.printStackTrace(); // Exibe erro ao cadastrar
     }
+}
+
+// Método para adicionar usuários com permissão de administrador
+public void cadastrarGerente(String nome, String email, String senha, String endereco) {
+    // Inserindo na tabela gestores
+    String sqlGestores = "INSERT INTO gestores (nome, email, endereco, tipo) VALUES (?, ?, ?, 'gerente')";
+
+    try (Connection conn = conectar(); // Conecta ao banco de dados
+         PreparedStatement stmtGestores = conn.prepareStatement(sqlGestores)) {
+
+        // Configura os parâmetros da consulta para a tabela gestores
+        stmtGestores.setString(1, nome); // Nome do gerente
+        stmtGestores.setString(2, email); // Email do gerente
+        stmtGestores.setString(3, endereco); // Endereço do gerente
+        stmtGestores.executeUpdate(); // Executa a atualização na tabela gestores
+
+    } catch (SQLException e) {
+        e.printStackTrace(); // Exibe erro ao cadastrar
+    }
+}
+
+// Método para listar usuários
+public List<Usuario> listarUsuarios() {
+    List<Usuario> usuarios = new ArrayList<>(); // Lista para armazenar usuários
+    String sql = "SELECT * FROM usuarios"; // Consulta todos os registros da tabela usuarios
+    try (Connection conn = conectar(); // Conecta ao banco de dados
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) { // Executa a consulta
+        while (rs.next()) {
+            Usuario usuario = new Usuario(); // Cria um novo objeto Usuario
+            // Preenche os dados do usuário a partir do ResultSet
+            usuario.setId(rs.getInt("id")); // Presumindo que a coluna 'id' ainda existe
+            usuario.setNome(rs.getString("nome")); // Nome do usuário
+            usuario.setEmail(rs.getString("email")); // Email do usuário
+            usuario.setSenha(rs.getString("senha")); // Certifique-se de que a senha está na tabela correta
+            usuario.setEndereco(rs.getString("endereco")); // Endereço do usuário
+            usuario.setTipo(rs.getString("tipo")); // Tipo de usuário (comum ou gerente)
+            usuarios.add(usuario); // Adiciona o usuário à lista
+        }
+    } catch (SQLException e) {
+        e.printStackTrace(); // Exibe erro ao listar
+    }
+    return usuarios; // Retorna a lista de usuários
+}
+
+// Método para listar administradores
+public List<Usuario> listaradmins() {
+    List<Usuario> usuarios = new ArrayList<>(); // Lista para armazenar usuários
+    String sql = "SELECT * FROM gestores"; // Consulta todos os registros da tabela gestores
+    try (Connection conn = conectar(); // Conecta ao banco de dados
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) { // Executa a consulta
+        while (rs.next()) {
+            Usuario usuario = new Usuario(); // Cria um novo objeto Usuario
+            // Preenche os dados do usuário a partir do ResultSet
+            usuario.setId(rs.getInt("id")); // Presumindo que a coluna 'id' ainda existe
+            usuario.setNome(rs.getString("nome")); // Nome do gerente
+            usuario.setEmail(rs.getString("email")); // Email do gerente
+            usuario.setSenha(rs.getString("senha")); // Certifique-se de que a senha está na tabela correta
+            usuario.setEndereco(rs.getString("endereco")); // Endereço do gerente
+            usuario.setTipo(rs.getString("tipo")); // Tipo de usuário (gerente)
+            usuarios.add(usuario); // Adiciona o gerente à lista
+        }
+    } catch (SQLException e) {
+        e.printStackTrace(); // Exibe erro ao listar
+    }
+    return usuarios; // Retorna a lista de gerentes
+}
+
+// Método para remover usuários
+public boolean removerUsuario(String email) {
+    String sqlUsuarios = "DELETE FROM usuarios WHERE email = ?"; // SQL para deletar da tabela usuarios
+    String sqlGestores = "DELETE FROM gestores WHERE email = ?"; // SQL para deletar da tabela gestores
     
-    public String editarUsuario(String emailAtual, String novoEmail, String novoNome, String novoEndereco) {
-        // Verifica se todos os campos estão vazios
-        if (novoEmail == null && novoNome == null && novoEndereco == null) {
-            return "nenhumCampoPreenchido"; // Mensagem se nenhum campo foi preenchido
+    try (Connection conn = conectar(); // Conecta ao banco de dados
+         PreparedStatement stmtUsuarios = conn.prepareStatement(sqlUsuarios);
+         PreparedStatement stmtGestores = conn.prepareStatement(sqlGestores)) {
+        
+        // Tenta remover primeiro da tabela usuarios
+        stmtUsuarios.setString(1, email); // Configura o parâmetro da consulta
+        int affectedRows = stmtUsuarios.executeUpdate(); // Executa a remoção
+        
+        // Se não afetou nenhuma linha, tenta remover da tabela gestores
+        if (affectedRows == 0) {
+            stmtGestores.setString(1, email); // Configura o parâmetro da consulta
+            affectedRows = stmtGestores.executeUpdate(); // Executa a remoção
         }
+        
+        return affectedRows > 0; // Retorna true se uma linha foi afetada
+    } catch (SQLException e) {
+        e.printStackTrace(); // Exibe erro ao remover
+        return false; // Retorna false em caso de erro
+    }
+}
 
-        StringBuilder sql = new StringBuilder("UPDATE usuarios SET ");
-        boolean hasUpdates = false;
+// Método para editar usuários
+public String editarUsuario(String emailAtual, String novoEmail, String novoNome, String novoEndereco) {
+    // Verifica se todos os campos estão vazios
+    if (novoEmail == null && novoNome == null && novoEndereco == null) {
+        return "nenhumCampoPreenchido"; // Mensagem se nenhum campo foi preenchido
+    }
 
-        if (novoEmail != null) {
-            sql.append("email = ?, ");
-            hasUpdates = true;
-        }
-        if (novoNome != null) {
-            sql.append("nome = ?, ");
-            hasUpdates = true;
-        }
-        if (novoEndereco != null) {
-            sql.append("endereco = ?, ");
-            hasUpdates = true;
-        }
+    // Verifica onde o usuário está (usuarios ou gestores)
+    String tipoUsuario = null;
+    String sqlTipo = "SELECT tipo FROM usuarios WHERE email = ? UNION SELECT tipo FROM gestores WHERE email = ?";
+    
+    try (Connection conn = conectar(); // Conecta ao banco de dados
+         PreparedStatement stmtTipo = conn.prepareStatement(sqlTipo)) {
+        stmtTipo.setString(1, emailAtual); // Para tabela usuarios
+        stmtTipo.setString(2, emailAtual); // Para tabela gestores
+        ResultSet rs = stmtTipo.executeQuery(); // Executa a consulta para obter o tipo do usuário
 
-        if (hasUpdates) {
-            sql.setLength(sql.length() - 2); // Remove a última vírgula e espaço
-            sql.append(" WHERE email = ?");
-
-            try (Connection conn = conectar();
-                 PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
-                int index = 1;
-                if (novoEmail != null) {
-                    stmt.setString(index++, novoEmail);
-                }
-                if (novoNome != null) {
-                    stmt.setString(index++, novoNome);
-                }
-                if (novoEndereco != null) {
-                    stmt.setString(index++, novoEndereco);
-                }
-                stmt.setString(index, emailAtual); // E-mail atual para a cláusula WHERE
-                int affectedRows = stmt.executeUpdate();
-
-                if (affectedRows > 0) {
-                    return "sucessoEditarUsuario"; // Mensagem de sucesso
-                } else {
-                    return "nenhumUsuarioEncontrado"; // Mensagem para nenhum usuário encontrado
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return "erroEditarUsuario: " + e.getMessage(); // Mensagem de erro
-            }
+        if (rs.next()) {
+            tipoUsuario = rs.getString("tipo"); // Obtém o tipo do usuário
         } else {
-            return "nenhumCampoAlterado"; // Mensagem se nenhum campo foi alterado
+            return "nenhumUsuarioEncontrado"; // Mensagem se o usuário não for encontrado
         }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return "erroAoBuscarUsuario: " + e.getMessage(); // Mensagem de erro ao buscar usuário
     }
 
-   
-     public boolean trocarTipoUsuario(String email) {
-        String sql = "UPDATE usuarios SET tipo = CASE " +
-                     "WHEN tipo = 'comum' THEN 'gerente' " +
-                     "WHEN tipo = 'gerente' THEN 'comum' " +
-                     "END WHERE email = ?";
+    // Atualiza o usuário na tabela correspondente
+    StringBuilder sql = new StringBuilder();
+    if ("comum".equals(tipoUsuario)) {
+        sql.append("UPDATE usuarios SET "); // Prepara a atualização para a tabela usuarios
+    } else if ("gerente".equals(tipoUsuario)) {
+        sql.append("UPDATE gestores SET "); // Prepara a atualização para a tabela gestores
+    } else {
+        return "tipoUsuarioInvalido"; // Mensagem se o tipo do usuário for inválido
+    }
 
-        try (Connection conn = conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, email); // Define o e-mail no PreparedStatement
+    boolean hasUpdates = false; // Flag para verificar se houve atualizações
+
+    // Adiciona os campos que precisam ser atualizados
+    if (novoEmail != null) {
+        sql.append("email = ?, "); // Adiciona email à consulta
+        hasUpdates = true; // Indica que houve uma atualização
+    }
+    if (novoNome != null) {
+        sql.append("nome = ?, "); // Adiciona nome à consulta
+        hasUpdates = true; // Indica que houve uma atualização
+    }
+    if (novoEndereco != null) {
+        sql.append("endereco = ?, "); // Adiciona endereço à consulta
+        hasUpdates = true; // Indica que houve uma atualização
+    }
+
+    if (hasUpdates) {
+        sql.setLength(sql.length() - 2); // Remove a última vírgula e espaço
+        sql.append(" WHERE email = ?"); // Adiciona a cláusula WHERE
+
+        try (Connection conn = conectar(); // Conecta ao banco de dados
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            int index = 1;
+            if (novoEmail != null) {
+                stmt.setString(index++, novoEmail); // Configura novo email
+            }
+            if (novoNome != null) {
+                stmt.setString(index++, novoNome); // Configura novo nome
+            }
+            if (novoEndereco != null) {
+                stmt.setString(index++, novoEndereco); // Configura novo endereço
+            }
+            stmt.setString(index, emailAtual); // E-mail atual para a cláusula WHERE
             int affectedRows = stmt.executeUpdate(); // Executa a atualização
-            return affectedRows > 0; // Retorna true se pelo menos uma linha foi atualizada
+
+            if (affectedRows > 0) {
+                return "usuarioAtualizado"; // Mensagem se o usuário foi atualizado
+            } else {
+                return "nenhumUsuarioAtualizado"; // Mensagem se nenhum usuário foi atualizado
+            }
         } catch (SQLException e) {
-            e.printStackTrace(); // Imprime a stack trace em caso de erro
-            return false; // Retorna false em caso de exceção
+            e.printStackTrace(); // Exibe erro ao atualizar
+            return "erroAoAtualizarUsuario: " + e.getMessage(); // Mensagem de erro ao atualizar
         }
     }
 
-    // Método para validação do login
-    public String validarUsuario(String email, String senha) {
-        // Verifica se os campos estão vazios
-        if (email == null || email.isEmpty() || senha == null || senha.isEmpty()) {
-            return "camposVazios"; // Mensagem para campos vazios
+    return "nenhumCampoParaAtualizar"; // Mensagem se não houver campos para atualizar
+}
+// Método para mudar o tipo de usuário (comum para gerente ou vice-versa)
+public boolean mudarTipoUsuario(String email) {
+    String tipoAtual = null; // Variável para armazenar o tipo atual do usuário
+
+    // Primeiro, precisamos determinar o tipo atual do usuário
+    String sqlTipo = "SELECT tipo FROM usuarios WHERE email = ? UNION SELECT tipo FROM gestores WHERE email = ?";
+
+    try (Connection conn = conectar(); // Conecta ao banco de dados
+         PreparedStatement stmtTipo = conn.prepareStatement(sqlTipo)) {
+        stmtTipo.setString(1, email); // Para tabela usuarios
+        stmtTipo.setString(2, email); // Para tabela gestores
+        ResultSet rs = stmtTipo.executeQuery(); // Executa a consulta
+
+        if (rs.next()) {
+            tipoAtual = rs.getString("tipo"); // Armazena o tipo atual do usuário
+        } else {
+            return false; // Retorna falso se o usuário não for encontrado em nenhuma tabela
         }
-
-        String sql = "SELECT * FROM usuarios WHERE email = ?";
-        try (Connection conn = conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, email); // Configura o parâmetro da consulta
-            ResultSet rs = stmt.executeQuery();
-            
-            if (!rs.next()) {
-                return "usuarioInexistente"; // Mensagem para usuário inexistente
-            }
-
-            // Verifica a senha
-            String senhaArmazenada = rs.getString("senha");
-            if (!senhaArmazenada.equals(senha)) { // Considere usar hashing aqui
-                return "senhaIncorreta"; // Mensagem para senha incorreta
-            }
-
-            return "sucesso"; // Usuário validado com sucesso
-
-        } catch (SQLException e) {
-            e.printStackTrace(); // Exibe erro ao validar
-            return "erroBanco"; // Mensagem para erro de banco de dados
-        }
+    } catch (SQLException e) {
+        e.printStackTrace(); // Exibe erro ao buscar tipo de usuário
+        return false; // Retorna falso em caso de erro
     }
 
-    // Método para obter usuário por email
-    public Usuario obterUsuarioPorEmail(String email) {
-        Usuario usuario = null; // Inicializa o usuário como null
-        String sql = "SELECT * FROM usuarios WHERE email = ?";
-        try(Connection conn = conectar();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, email); // Configura o parâmetro da consulta
-            ResultSet rs = stmt.executeQuery();
+    try (Connection conn = conectar()) { // Conecta novamente ao banco de dados
+        if ("gerente".equals(tipoAtual)) {
+            // Se o tipo atual é 'gerente', precisa remover da tabela 'gestores' e adicionar à tabela 'usuarios'
+            String sqlRemoverGestor = "DELETE FROM gestores WHERE email = ?"; // SQL para remover gerente
+            String sqlAdicionarUsuario = "INSERT INTO usuarios (nome, endereco, tipo, email) SELECT nome, endereco, 'comum', email FROM gestores WHERE email = ?"; // SQL para adicionar como usuário comum
 
-            if (rs.next()) {
-                // Criação do objeto Usuario com os dados do banco
-                usuario = new Usuario();
-                usuario.setId(rs.getInt("id"));
-                usuario.setNome(rs.getString("nome"));
-                usuario.setEmail(rs.getString("email"));
-                usuario.setSenha(rs.getString("senha"));
-                usuario.setTipo(rs.getString("tipo"));
+            try (PreparedStatement stmtRemoverGestor = conn.prepareStatement(sqlRemoverGestor);
+                 PreparedStatement stmtAdicionarUsuario = conn.prepareStatement(sqlAdicionarUsuario)) {
+
+                stmtRemoverGestor.setString(1, email); // Configura o parâmetro da consulta para remover
+                stmtRemoverGestor.executeUpdate(); // Executa a remoção do gerente
+
+                stmtAdicionarUsuario.setString(1, email); // Configura o parâmetro da consulta para adicionar
+                stmtAdicionarUsuario.executeUpdate(); // Executa a adição à tabela de usuários
             }
-        }catch (SQLException e) {
-            e.printStackTrace(); // Exibe erro ao obter usuário
-        }
+        } else if ("comum".equals(tipoAtual)) {
+            // Se o tipo atual é 'comum', precisa remover da tabela 'usuarios' e adicionar à tabela 'gestores'
+            String sqlRemoverUsuario = "DELETE FROM usuarios WHERE email = ?"; // SQL para remover usuário comum
+            String sqlAdicionarGestor = "INSERT INTO gestores (nome, endereco, tipo, email) SELECT nome, endereco, 'gerente', email FROM usuarios WHERE email = ?"; // SQL para adicionar como gerente
 
-        return usuario; // Retorna o usuário encontrado
+            try (PreparedStatement stmtRemoverUsuario = conn.prepareStatement(sqlRemoverUsuario);
+                 PreparedStatement stmtAdicionarGestor = conn.prepareStatement(sqlAdicionarGestor)) {
+
+                stmtRemoverUsuario.setString(1, email); // Configura o parâmetro da consulta para remover
+                stmtRemoverUsuario.executeUpdate(); // Executa a remoção do usuário
+
+                stmtAdicionarGestor.setString(1, email); // Configura o parâmetro da consulta para adicionar
+                stmtAdicionarGestor.executeUpdate(); // Executa a adição à tabela de gestores
+            }
+        }
+        return true; // Retorna verdadeiro se a troca de tipo foi bem-sucedida
+    } catch (SQLException e) {
+        e.printStackTrace(); // Exibe erro ao mudar tipo de usuário
+        return false; // Retorna falso em caso de erro
     }
+}
+// Método para validar o login do usuário
+public String validarLogin(String email, String senha) {
+    // SQL para verificar se o usuário existe com o e-mail e senha fornecidos
+    String sql = "SELECT * FROM usuarios WHERE email = ? AND senha = ? UNION SELECT * FROM gestores WHERE email = ? AND senha = ?";
+
+    try (Connection conn = conectar(); // Conecta ao banco de dados
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        // Configura os parâmetros da consulta
+        stmt.setString(1, email); // Primeiro parâmetro: email para usuarios
+        stmt.setString(2, senha); // Segundo parâmetro: senha para usuarios
+        stmt.setString(3, email); // Terceiro parâmetro: email para gestores
+        stmt.setString(4, senha); // Quarto parâmetro: senha para gestores
+
+        ResultSet rs = stmt.executeQuery(); // Executa a consulta
+        if (rs.next()) {
+            // Se um usuário ou gerente for encontrado, retorna o tipo
+            return rs.getString("tipo"); // Retorna o tipo de usuário (comum ou gerente)
+        } else {
+            return "usuarioNaoEncontrado"; // Mensagem se o usuário não for encontrado
+        }
+    } catch (SQLException e) {
+        e.printStackTrace(); // Exibe erro ao validar login
+        return "erroAoValidarLogin: " + e.getMessage(); // Mensagem de erro ao validar login
+    }
+}
+
+// Método para obter um usuário por e-mail
+public Usuario obterUsuarioPorEmail(String email) {
+    Usuario usuario = null; // Inicializa o objeto Usuario como nulo
+    String sql = "SELECT * FROM usuarios WHERE email = ? UNION SELECT * FROM gestores WHERE email = ?"; // SQL para buscar usuário por e-mail
+
+    try (Connection conn = conectar(); // Conecta ao banco de dados
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        // Configura os parâmetros da consulta
+        stmt.setString(1, email); // Primeiro parâmetro: email para usuarios
+        stmt.setString(2, email); // Segundo parâmetro: email para gestores
+        ResultSet rs = stmt.executeQuery(); // Executa a consulta
+
+        if (rs.next()) {
+            usuario = new Usuario(); // Cria um novo objeto Usuario
+            // Preenche os dados do usuário a partir do ResultSet
+            usuario.setId(rs.getInt("id")); // Presumindo que a coluna 'id' ainda existe
+            usuario.setNome(rs.getString("nome")); // Nome do usuário
+            usuario.setEmail(rs.getString("email")); // Email do usuário
+            usuario.setSenha(rs.getString("senha")); // Senha do usuário (certifique-se de que a senha está na tabela correta)
+            usuario.setEndereco(rs.getString("endereco")); // Endereço do usuário
+            usuario.setTipo(rs.getString("tipo")); // Tipo de usuário (comum ou gerente)
+        }
+    } catch (SQLException e) {
+        e.printStackTrace(); // Exibe erro ao obter usuário
+    }
+
+    return usuario; // Retorna o usuário encontrado ou nulo se não houver
+}
+
    // =================== Funções de Ônibus ===================
     // Método para adicionar uma linha de ônibus ao banco de dados
     public void adicionarLinhaOnibus(String linha, String partida, String destino) {

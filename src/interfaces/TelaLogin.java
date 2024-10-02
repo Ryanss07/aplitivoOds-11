@@ -159,7 +159,7 @@ public class TelaLogin extends javax.swing.JFrame {
        String email = em_lg.getText();
        String senha = new String(psw_lg.getPassword()).trim();
         
-       String resultadoValidacao = bancoDeDados.validarUsuario(email, senha);
+       String resultadoValidacao = bancoDeDados.validarLogin(email, senha);
 
            switch (resultadoValidacao) {
                case "sucesso":
